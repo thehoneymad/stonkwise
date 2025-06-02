@@ -32,7 +32,7 @@ class MarketStructureDetector:
     def __init__(
         self,
         swing_lookback: int = 5,
-        swing_threshold: float = 0.01,
+        swing_threshold: float = 0.003,  # Reduced from 0.005 to 0.003
         trend_strength_threshold: float = 0.5,
     ):
         """
@@ -94,53 +94,52 @@ class MarketStructureDetector:
         """
         # Ensure we have enough data
         if len(data) < 2 * self.swing_lookback + 1:
+            print(
+                f"Not enough data: {len(data)} bars, need at least {2 * self.swing_lookback + 1}"
+            )
             return
 
         # Get high and low prices
         highs = data["High"].values
         lows = data["Low"].values
 
-        # Detect swing highs
+        # Use a more relaxed swing detection algorithm
+        # Instead of requiring a perfect local maximum/minimum,
+        # we'll use a rolling window approach
+
+        # For swing highs - find local maxima
         for i in range(self.swing_lookback, len(data) - self.swing_lookback):
-            # Check if this is a local maximum
-            is_swing_high = True
-            for j in range(1, self.swing_lookback + 1):
-                if highs[i] <= highs[i - j] or highs[i] <= highs[i + j]:
-                    is_swing_high = False
-                    break
-
-            # Check if the swing is significant enough
-            if is_swing_high:
-                # Calculate the percentage change from the previous swing high
-                if self.swing_highs:
-                    prev_high = self.swing_highs[-1][1]
-                    pct_change = abs(highs[i] - prev_high) / prev_high
-                    if pct_change < self.swing_threshold:
-                        is_swing_high = False
-
-                if is_swing_high:
+            # Check if this is a local maximum within the lookback window
+            window_highs = highs[i - self.swing_lookback : i + self.swing_lookback + 1]
+            if (
+                highs[i] >= np.max(window_highs) * 0.9995
+            ):  # Allow for very small variations
+                # Check if it's significantly different from the previous swing high
+                if (
+                    not self.swing_highs
+                    or abs(highs[i] - self.swing_highs[-1][1]) / self.swing_highs[-1][1]
+                    >= self.swing_threshold
+                ):
                     self.swing_highs.append((i, highs[i]))
 
-        # Detect swing lows
+        # For swing lows - find local minima
         for i in range(self.swing_lookback, len(data) - self.swing_lookback):
-            # Check if this is a local minimum
-            is_swing_low = True
-            for j in range(1, self.swing_lookback + 1):
-                if lows[i] >= lows[i - j] or lows[i] >= lows[i + j]:
-                    is_swing_low = False
-                    break
-
-            # Check if the swing is significant enough
-            if is_swing_low:
-                # Calculate the percentage change from the previous swing low
-                if self.swing_lows:
-                    prev_low = self.swing_lows[-1][1]
-                    pct_change = abs(lows[i] - prev_low) / prev_low
-                    if pct_change < self.swing_threshold:
-                        is_swing_low = False
-
-                if is_swing_low:
+            # Check if this is a local minimum within the lookback window
+            window_lows = lows[i - self.swing_lookback : i + self.swing_lookback + 1]
+            if (
+                lows[i] <= np.min(window_lows) * 1.0005
+            ):  # Allow for very small variations
+                # Check if it's significantly different from the previous swing low
+                if (
+                    not self.swing_lows
+                    or abs(lows[i] - self.swing_lows[-1][1]) / self.swing_lows[-1][1]
+                    >= self.swing_threshold
+                ):
                     self.swing_lows.append((i, lows[i]))
+
+        print(
+            f"Detected {len(self.swing_highs)} swing highs and {len(self.swing_lows)} swing lows"
+        )
 
     def _analyze_swings(self) -> TrendType:
         """
@@ -151,11 +150,20 @@ class MarketStructureDetector:
         """
         # If we don't have enough swings, return unknown
         if len(self.swing_highs) < 2 or len(self.swing_lows) < 2:
+            print(
+                f"Not enough swings detected: {len(self.swing_highs)} highs, {len(self.swing_lows)} lows"
+            )
             return TrendType.UNKNOWN
 
         # Get the last few swing highs and lows
-        recent_highs = self.swing_highs[-3:]
-        recent_lows = self.swing_lows[-3:]
+        recent_highs = (
+            self.swing_highs[-3:]
+            if len(self.swing_highs) >= 3
+            else self.swing_highs[-2:]
+        )
+        recent_lows = (
+            self.swing_lows[-3:] if len(self.swing_lows) >= 3 else self.swing_lows[-2:]
+        )
 
         # Check for higher highs and higher lows (uptrend)
         higher_highs = all(
@@ -176,6 +184,10 @@ class MarketStructureDetector:
             recent_lows[i][1] < recent_lows[i - 1][1]
             for i in range(1, len(recent_lows))
         )
+
+        # Print debug info
+        print(f"Higher highs: {higher_highs}, Higher lows: {higher_lows}")
+        print(f"Lower highs: {lower_highs}, Lower lows: {lower_lows}")
 
         # Determine trend based on the sequence of highs and lows
         if higher_highs and higher_lows:
@@ -294,7 +306,7 @@ class MarketStructureDetector:
 
 
 def detect_market_structure(
-    data: pd.DataFrame, swing_lookback: int = 5, swing_threshold: float = 0.01
+    data: pd.DataFrame, swing_lookback: int = 5, swing_threshold: float = 0.003
 ) -> TrendType:
     """
     Detect market structure from price data.
@@ -315,7 +327,7 @@ def detect_market_structure(
 
 
 def get_supply_demand_zones(
-    data: pd.DataFrame, swing_lookback: int = 5, swing_threshold: float = 0.01
+    data: pd.DataFrame, swing_lookback: int = 5, swing_threshold: float = 0.003
 ) -> Dict[str, List[Dict[str, float]]]:
     """
     Identify supply and demand zones based on market structure.

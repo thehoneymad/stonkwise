@@ -1,140 +1,86 @@
 """
-Script functions for Poetry commands.
+Poetry scripts for the stonkwise project.
 """
 
 import os
-import shutil
 import subprocess
 import sys
-from typing import List, Optional
+from pathlib import Path
 
 
-def run_format(args: Optional[List[str]] = None) -> None:
-    """Format code with black and isort, and remove unused imports."""
-    print("Removing unused imports with autoflake...")
-    subprocess.run([
-        "autoflake",
-        "--recursive",
-        "--remove-all-unused-imports",
-        "--remove-unused-variables",
-        "--in-place",
-        "stonkwise",
-        "tests"
-    ], check=True)
-    
-    print("Formatting code with black...")
+def run_format():
+    """Run code formatters."""
+    print("Running black...")
     subprocess.run(["black", "stonkwise", "tests"], check=True)
-    
-    print("Sorting imports with isort...")
+    print("Running isort...")
     subprocess.run(["isort", "stonkwise", "tests"], check=True)
-    
-    print("✅ Code formatting complete")
+    print("Code formatting complete.")
 
 
-def run_lint(args: Optional[List[str]] = None) -> None:
-    """Run linters: flake8 and mypy."""
+def run_lint():
+    """Run linters."""
     print("Running flake8...")
-    subprocess.run(["flake8", "stonkwise", "tests"], check=False)
-    
-    print("\nRunning mypy...")
-    subprocess.run(["mypy", "stonkwise"], check=False)
-    
-    print("✅ Linting complete")
+    subprocess.run(["flake8", "stonkwise", "tests"], check=True)
+    print("Running mypy...")
+    subprocess.run(["mypy", "stonkwise"], check=True)
+    print("Linting complete.")
 
 
-def run_test(args: Optional[List[str]] = None) -> None:
+def run_test():
     """Run tests."""
-    cmd = ["pytest", "tests/"]
-    if args:
-        cmd.extend(args)
-    
-    print(f"Running tests: {' '.join(cmd)}")
-    subprocess.run(cmd, check=False)
+    print("Running pytest...")
+    subprocess.run(["pytest", "-xvs", "tests"], check=True)
+    print("Tests complete.")
 
 
-def run_clean(args: Optional[List[str]] = None) -> None:
-    """Remove build artifacts."""
-    dirs_to_remove = [
-        "build/",
-        "dist/",
-        ".pytest_cache/",
-        ".mypy_cache/",
-        "htmlcov/",
-        ".coverage",
-        "tmp/",
-    ]
+def run_clean():
+    """Clean up temporary files."""
+    print("Cleaning up temporary files...")
+    # Clean up __pycache__ directories
+    for path in Path(".").glob("**/__pycache__"):
+        for file in path.glob("*"):
+            file.unlink()
+        path.rmdir()
     
-    # Add *.egg-info directories
-    for item in os.listdir("."):
-        if item.endswith(".egg-info") and os.path.isdir(item):
-            dirs_to_remove.append(item)
+    # Clean up .pytest_cache
+    if Path(".pytest_cache").exists():
+        for file in Path(".pytest_cache").glob("**/*"):
+            if file.is_file():
+                file.unlink()
+        for path in sorted(Path(".pytest_cache").glob("**/*"), key=lambda p: len(str(p)), reverse=True):
+            if path.is_dir():
+                path.rmdir()
+        Path(".pytest_cache").rmdir()
     
-    for dir_path in dirs_to_remove:
-        if os.path.exists(dir_path):
-            if os.path.isdir(dir_path):
-                shutil.rmtree(dir_path)
-            else:
-                os.remove(dir_path)
-            print(f"Removed {dir_path}")
+    # Clean up .mypy_cache
+    if Path(".mypy_cache").exists():
+        for file in Path(".mypy_cache").glob("**/*"):
+            if file.is_file():
+                file.unlink()
+        for path in sorted(Path(".mypy_cache").glob("**/*"), key=lambda p: len(str(p)), reverse=True):
+            if path.is_dir():
+                path.rmdir()
+        Path(".mypy_cache").rmdir()
     
-    # Remove __pycache__ directories and .pyc files
-    for root, dirs, files in os.walk("."):
-        for dir_name in dirs:
-            if dir_name == "__pycache__":
-                cache_dir = os.path.join(root, dir_name)
-                shutil.rmtree(cache_dir)
-                print(f"Removed {cache_dir}")
-        
-        for file_name in files:
-            if file_name.endswith(".pyc"):
-                pyc_file = os.path.join(root, file_name)
-                os.remove(pyc_file)
-                print(f"Removed {pyc_file}")
-    
-    print("✅ Clean complete")
+    print("Cleanup complete.")
 
 
-def run_example(args: Optional[List[str]] = None) -> None:
-    """Run an example analysis."""
-    ticker = "MSFT"
-    period = "day"
-    strategy = "simple"
-    
-    if args:
-        # Parse args in format: --ticker=MSFT --period=day --strategy=simple
-        for arg in args:
-            if arg.startswith("--ticker="):
-                ticker = arg.split("=")[1]
-            elif arg.startswith("--period="):
-                period = arg.split("=")[1]
-            elif arg.startswith("--strategy="):
-                strategy = arg.split("=")[1]
-    
-    cmd = [
-        "python", "-m", "stonkwise", "analyze",
-        "--ticker", ticker,
-        "--period", period,
-        "--strategy", strategy
-    ]
-    
-    print(f"Running example: {' '.join(cmd)}")
-    subprocess.run(cmd, check=False)
+def run_example():
+    """Run the example script."""
+    print("Running example...")
+    from stonkwise.cli import cli
+    sys.argv = ["stonkwise", "analyze", "--ticker", "MSFT"]
+    cli()
 
 
-def run_release(args: Optional[List[str]] = None) -> None:
-    """Run format and lint before build to prepare for release."""
-    print("🚀 Preparing for release...")
-    
-    # First format the code
-    print("\n📝 Formatting code...")
-    run_format(args)
-    
-    # Then lint the code
-    print("\n🔎 Linting code...")
-    run_lint(args)
-    
-    # Build the package
-    print("\n📦 Building package...")
-    subprocess.run(["poetry", "build"], check=False)
-    
-    print("\n✅ Release preparation complete!")
+def run_build():
+    """Run the build process (format, lint, test)."""
+    print("Running build process...")
+    try:
+        run_format()
+        run_lint()
+        run_test()
+        print("Build successful!")
+    except subprocess.CalledProcessError as e:
+        print(f"Build failed: {e}")
+        sys.exit(1)
