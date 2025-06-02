@@ -14,6 +14,19 @@ def run_format():
     subprocess.run(["black", "stonkwise", "tests"], check=True)
     print("Running isort...")
     subprocess.run(["isort", "stonkwise", "tests"], check=True)
+    print("Running autoflake...")
+    subprocess.run(
+        [
+            "autoflake",
+            "--in-place",
+            "--recursive",
+            "--remove-all-unused-imports",
+            "--remove-unused-variables",
+            "stonkwise",
+            "tests",
+        ],
+        check=True,
+    )
     print("Code formatting complete.")
 
 

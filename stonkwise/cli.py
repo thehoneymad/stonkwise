@@ -38,9 +38,7 @@ def date_options():
             "--start-date",
             help="Start date for analysis (YYYY-MM-DD), defaults to 1 year ago",
         )(f)
-        f = click.option(
-            "--end-date", help="End date for analysis (YYYY-MM-DD), defaults to today"
-        )(f)
+        f = click.option("--end-date", help="End date for analysis (YYYY-MM-DD), defaults to today")(f)
         return f
 
     return decorator
@@ -99,12 +97,8 @@ def cli():
     default=0.001,
     help="Commission rate for trades (default: 0.001 = 0.1%)",
 )
-@click.option(
-    "--show-ma/--no-ma", default=False, help="Show moving averages on the plot"
-)
-@click.option(
-    "--show-trend/--no-trend", default=False, help="Show trend direction on the plot"
-)
+@click.option("--show-ma/--no-ma", default=False, help="Show moving averages on the plot")
+@click.option("--show-trend/--no-trend", default=False, help="Show trend direction on the plot")
 @click.option(
     "--show-zones/--no-zones",
     default=False,
@@ -132,13 +126,9 @@ def analyze(
     visualizing charts, and running backtests with various strategies.
     """
     if backtest:
-        click.echo(
-            f"Analyzing and backtesting {', '.join(ticker)} with {period} period using {strategy} strategy"
-        )
+        click.echo(f"Analyzing and backtesting {', '.join(ticker)} " f"with {period} period using {strategy} strategy")
     else:
-        click.echo(
-            f"Analyzing {', '.join(ticker)} with {period} period using {strategy} strategy"
-        )
+        click.echo(f"Analyzing {', '.join(ticker)} with {period} " f"period using {strategy} strategy")
 
     try:
         # Import here to avoid circular imports

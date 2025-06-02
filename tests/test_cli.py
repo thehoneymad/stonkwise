@@ -54,9 +54,7 @@ class TestCLI:
         """Test the analyze command with a ticker."""
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "test_output.png")
-            result = runner.invoke(
-                cli, ["analyze", "--ticker", "MSFT", "--output", output_path]
-            )
+            result = runner.invoke(cli, ["analyze", "--ticker", "MSFT", "--output", output_path])
             assert_that(result.exit_code).is_equal_to(0)
             assert_that(result.output).contains("Plotting MSFT")
             assert_that(Path(output_path).exists()).is_true()

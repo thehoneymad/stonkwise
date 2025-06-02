@@ -65,9 +65,9 @@ class TestMarketStructureDetector:
         print(f"Detected {len(test_detector.swing_highs)} swing highs")
         print(f"Detected {len(test_detector.swing_lows)} swing lows")
         if test_detector.swing_highs:
-            print(f"Swing highs: {[h[1] for h in test_detector.swing_highs[-5:]]}")
+            print(f"Swing highs: {[high[1] for high in test_detector.swing_highs[-5:]]}")
         if test_detector.swing_lows:
-            print(f"Swing lows: {[l[1] for l in test_detector.swing_lows[-5:]]}")
+            print(f"Swing lows: {[low[1] for low in test_detector.swing_lows[-5:]]}")
 
         # Assert that an uptrend is detected
         assert_that(trend).is_equal_to(TrendType.UPTREND)
@@ -114,9 +114,9 @@ class TestMarketStructureDetector:
         print(f"Detected {len(test_detector.swing_highs)} swing highs")
         print(f"Detected {len(test_detector.swing_lows)} swing lows")
         if test_detector.swing_highs:
-            print(f"Swing highs: {[h[1] for h in test_detector.swing_highs[-5:]]}")
+            print(f"Swing highs: {[high[1] for high in test_detector.swing_highs[-5:]]}")
         if test_detector.swing_lows:
-            print(f"Swing lows: {[l[1] for l in test_detector.swing_lows[-5:]]}")
+            print(f"Swing lows: {[low[1] for low in test_detector.swing_lows[-5:]]}")
 
         # Assert that a downtrend is detected
         assert_that(trend).is_equal_to(TrendType.DOWNTREND)
@@ -164,9 +164,9 @@ class TestMarketStructureDetector:
         print(f"Detected {len(test_detector.swing_highs)} swing highs")
         print(f"Detected {len(test_detector.swing_lows)} swing lows")
         if test_detector.swing_highs:
-            print(f"Swing highs: {[h[1] for h in test_detector.swing_highs[-5:]]}")
+            print(f"Swing highs: {[high[1] for high in test_detector.swing_highs[-5:]]}")
         if test_detector.swing_lows:
-            print(f"Swing lows: {[l[1] for l in test_detector.swing_lows[-5:]]}")
+            print(f"Swing lows: {[low[1] for low in test_detector.swing_lows[-5:]]}")
 
         # Assert that a range is detected
         assert_that(trend).is_equal_to(TrendType.RANGE)
@@ -247,9 +247,9 @@ class TestMarketStructureDetector:
         print(f"Detected {len(test_detector.swing_highs)} swing highs")
         print(f"Detected {len(test_detector.swing_lows)} swing lows")
         if test_detector.swing_highs:
-            print(f"Swing highs: {[h[1] for h in test_detector.swing_highs[-5:]]}")
+            print(f"Swing highs: {[high[1] for high in test_detector.swing_highs[-5:]]}")
         if test_detector.swing_lows:
-            print(f"Swing lows: {[l[1] for l in test_detector.swing_lows[-5:]]}")
+            print(f"Swing lows: {[low[1] for low in test_detector.swing_lows[-5:]]}")
 
         # We don't assert a specific trend here, just that it's not unknown
         assert_that(trend).is_not_equal_to(TrendType.UNKNOWN)

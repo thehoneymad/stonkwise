@@ -102,9 +102,7 @@ def backtest_ticker(
     """
     # Set default dates if not provided
     if start_date is None:
-        start_date = (datetime.datetime.now() - datetime.timedelta(days=365)).strftime(
-            "%Y-%m-%d"
-        )
+        start_date = (datetime.datetime.now() - datetime.timedelta(days=365)).strftime("%Y-%m-%d")
     if end_date is None:
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
@@ -203,9 +201,7 @@ def backtest_ticker(
             if trend is None:
                 detector.detect_structure(df)
             zones = detector.get_supply_demand_zones(df)
-            print(
-                f"Detected {len(zones['supply'])} supply zones and {len(zones['demand'])} demand zones"
-            )
+            print(f"Detected {len(zones['supply'])} supply zones " f"and {len(zones['demand'])} demand zones")
 
     # Print out the starting conditions
     print(f"Starting Portfolio Value: ${cerebro.broker.getvalue():.2f}")
@@ -279,9 +275,7 @@ def backtest_ticker(
     return results_dict
 
 
-def export_results(
-    results: Dict[str, Union[float, int]], ticker: str, strategy: str, output_path: str
-) -> None:
+def export_results(results: Dict[str, Union[float, int]], ticker: str, strategy: str, output_path: str) -> None:
     """
     Export backtest results to a file.
 
