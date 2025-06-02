@@ -3,10 +3,10 @@ Tests for the CLI module.
 """
 
 import pytest
-from stonkwise.cli import parse_args
+from stonkwise.stonkwise.cli import parse_args
 
 
-def test_parse_args_analyze():
+def test_parse_args_analyze() -> None:
     """Test parsing analyze command arguments."""
     args = parse_args(["analyze", "--ticker", "MSFT", "--period", "day"])
     assert args.command == "analyze"
@@ -15,7 +15,7 @@ def test_parse_args_analyze():
     assert args.strategy == "simple"  # Default value
 
 
-def test_parse_args_multiple_tickers():
+def test_parse_args_multiple_tickers() -> None:
     """Test parsing multiple ticker arguments."""
     args = parse_args(["analyze", "--ticker", "MSFT", "AAPL", "--period", "week"])
     assert args.command == "analyze"
@@ -23,7 +23,7 @@ def test_parse_args_multiple_tickers():
     assert args.period == "week"
 
 
-def test_parse_args_with_strategy():
+def test_parse_args_with_strategy() -> None:
     """Test parsing with a specified strategy."""
     args = parse_args(["analyze", "--ticker", "MSFT", "--strategy", "custom"])
     assert args.command == "analyze"

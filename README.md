@@ -54,16 +54,24 @@ poetry run example --ticker=MSFT --period=day
 ## Project Structure
 
 ```
-stonkwise/
-├── stonkwise/           # Main package code
+stonkwise/              # Project root
+├── stonkwise/          # Actual package code
 │   ├── __init__.py
-│   ├── analyzer.py      # Analysis functionality
-│   ├── cli.py           # Command line interface
-│   ├── data_sources/    # Data source modules
-│   ├── strategies/      # Trading strategies
-│   └── utils/           # Utility functions
-├── tests/               # Test directory
-└── poetry_scripts.py    # Script functions for Poetry commands
+│   ├── __main__.py
+│   ├── analyzer.py
+│   ├── cli.py
+│   ├── data_sources/
+│   │   ├── __init__.py
+│   │   └── yahoo.py
+│   ├── strategies/
+│   │   ├── __init__.py
+│   │   └── simple.py
+│   └── utils/
+│       ├── __init__.py
+│       └── plotting.py
+├── tests/              # Test directory
+├── poetry_scripts.py   # Script functions for Poetry commands
+└── pyproject.toml      # Project configuration
 ```
 
 This is a learning project to explore:
