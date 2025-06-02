@@ -61,6 +61,7 @@ def run_clean(args: Optional[List[str]] = None) -> None:
         ".mypy_cache/",
         "htmlcov/",
         ".coverage",
+        "tmp/",
     ]
     
     # Add *.egg-info directories
