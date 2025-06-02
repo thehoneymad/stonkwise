@@ -3,9 +3,12 @@ Main analyzer module for stonkwise.
 """
 
 import datetime
+import os
+import pathlib
 from typing import List, Optional
 
 import backtrader as bt
+import matplotlib.pyplot as plt
 
 from stonkwise.data_sources import get_yahoo_data
 from stonkwise.strategies import SimpleStrategy
@@ -62,8 +65,31 @@ def analyze_ticker(
     # Print out the final result
     print(f"Final Portfolio Value: ${cerebro.broker.getvalue():.2f}")
 
-    # Plot the result
-    cerebro.plot(style="candlestick")
+    # Plot the result without blocking
+    # Set show=False to prevent the plot from blocking execution
+    # Use style='bar' to ensure proper coloring of up/down days
+    fig = cerebro.plot(
+        style="bar",
+        barup="green",
+        bardown="red",
+        volup="green",
+        voldown="red",
+        show=False,
+    )[0][0]
+
+    # Save the plot to a file in the tmp directory
+    project_root = pathlib.Path(__file__).parent.parent.parent
+    tmp_dir = project_root / "tmp"
+    os.makedirs(tmp_dir, exist_ok=True)
+
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    plot_file = tmp_dir / f"{ticker}_{period}_{timestamp}_plot.png"
+
+    fig.savefig(plot_file)
+    print(f"Plot saved to: {plot_file}")
+
+    # Close the figure to free up memory
+    plt.close(fig)
 
 
 def analyze_tickers(

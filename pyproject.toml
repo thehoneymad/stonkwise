@@ -27,6 +27,8 @@ backtrader = "^1.9.76"
 pandas = "^1.5.3"
 numpy = "^1.24.0"
 matplotlib = "^3.7.0"
+requests = "^2.32.3"
+yfinance = "^0.2.61"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
