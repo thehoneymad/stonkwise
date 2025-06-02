@@ -37,10 +37,14 @@ isort = "^5.12.0"
 flake8 = "^6.0.0"
 mypy = "^1.3.0"
 pre-commit = "^3.3.2"
-invoke = "^2.2.0"
 
 [tool.poetry.scripts]
 stonkwise = "stonkwise.cli:main"
+format = "poetry_scripts:run_format"
+lint = "poetry_scripts:run_lint"
+test = "poetry_scripts:run_test"
+clean = "poetry_scripts:run_clean"
+example = "poetry_scripts:run_example"
 
 [tool.black]
 line-length = 88
