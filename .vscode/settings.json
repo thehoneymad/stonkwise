@@ -5,11 +5,25 @@
     },
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
     "python.testing.pytestArgs": [
         "tests"
     ],
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "basic",
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=88",
+        "--extend-ignore=E203",
+        "--exclude=.git,__pycache__,build,dist"
+    ],
+    "black-formatter.args": [
+        "--line-length=88"
+    ],
+    "black-formatter.importStrategy": "useBundled",
+    "black-formatter.showNotifications": "onError",
+    "black-formatter.cwd": "${workspaceFolder}"
 }
