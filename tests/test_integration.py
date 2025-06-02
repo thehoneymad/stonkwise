@@ -54,11 +54,12 @@ class TestIntegration:
     def test_price_action_strategy_parameters(self):
         """Test that the price action strategy class has the expected parameters."""
         # Test strategy class parameters without instantiation
-        param_names = [name for name, _ in PriceActionStrategy.params]
+        # Use the Backtrader metaclass method to get parameter names
+        param_names = list(PriceActionStrategy.params._getkeys())  # type: ignore
         
         expected_params = [
             'swing_lookback', 'risk_reward_ratio', 'require_pattern_confirmation',
-            'position_size_pct', 'max_risk_per_trade', 'atr_period'
+            'max_risk_per_trade', 'atr_period', 'max_concurrent_trades'
         ]
         
         for param in expected_params:

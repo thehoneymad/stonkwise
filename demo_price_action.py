@@ -84,26 +84,27 @@ def demo_strategy_parameters():
 
     # Note: This creates the strategy class but doesn't instantiate it
     # since that requires a Cerebro context
-    params = dict(PriceActionStrategy.params)
+    # Use the Backtrader metaclass method to get parameter names and values
+    param_keys = list(PriceActionStrategy.params._getkeys())  # type: ignore
     
     print("Market Structure Parameters:")
-    print(f"  - Swing lookback: {params['swing_lookback']}")
-    print(f"  - ATR threshold multiplier: {params['atr_swing_threshold_multiplier']}")
-    print(f"  - Trend strength threshold: {params['trend_strength_threshold']}")
+    print(f"  - Swing lookback: {getattr(PriceActionStrategy.params, 'swing_lookback')}")
+    print(f"  - ATR threshold multiplier: {getattr(PriceActionStrategy.params, 'atr_swing_threshold_multiplier')}")
+    print(f"  - Trend strength threshold: {getattr(PriceActionStrategy.params, 'trend_strength_threshold')}")
     
     print("\nPattern Parameters:")
-    print(f"  - Engulfing threshold: {params['engulfing_threshold']}")
-    print(f"  - Require pattern confirmation: {params['require_pattern_confirmation']}")
-    print(f"  - Allowed patterns: {params['allowed_patterns']}")
+    print(f"  - Engulfing threshold: {getattr(PriceActionStrategy.params, 'engulfing_threshold')}")
+    print(f"  - Require pattern confirmation: {getattr(PriceActionStrategy.params, 'require_pattern_confirmation')}")
+    print(f"  - Allowed patterns: {getattr(PriceActionStrategy.params, 'allowed_patterns')}")
     
     print("\nRisk Management:")
-    print(f"  - Risk-reward ratio: {params['risk_reward_ratio']}")
-    print(f"  - Stop loss ATR multiplier: {params['stop_loss_atr_mult']}")
-    print(f"  - Max risk per trade: {params['max_risk_per_trade']*100}%")
+    print(f"  - Risk-reward ratio: {getattr(PriceActionStrategy.params, 'risk_reward_ratio')}")
+    print(f"  - Stop loss ATR multiplier: {getattr(PriceActionStrategy.params, 'stop_loss_atr_mult')}")
+    print(f"  - Max risk per trade: {getattr(PriceActionStrategy.params, 'max_risk_per_trade')*100}%")
     
     print("\nTrade Management:")
-    print(f"  - Max concurrent trades: {params['max_concurrent_trades']}")
-    print(f"  - ATR period: {params['atr_period']}")
+    print(f"  - Max concurrent trades: {getattr(PriceActionStrategy.params, 'max_concurrent_trades')}")
+    print(f"  - ATR period: {getattr(PriceActionStrategy.params, 'atr_period')}")
     print()
 
 
