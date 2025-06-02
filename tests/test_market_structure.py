@@ -31,11 +31,11 @@ class TestMarketStructureDetector:
 
         # Create higher highs and higher lows pattern with actual swing points
         np.random.seed(42)  # For reproducibility
-        
+
         # Create an uptrend with pullbacks to generate actual swing points
         base_trend = [100 + i * 2 for i in range(30)]  # Strong uptrend base
         volatility = [np.random.normal(0, 3) for _ in range(30)]  # Add volatility
-        
+
         closes = [base + vol for base, vol in zip(base_trend, volatility)]
         highs = [c + abs(np.random.normal(0, 1)) for c in closes]
         lows = [c - abs(np.random.normal(0, 1)) for c in closes]
@@ -80,11 +80,11 @@ class TestMarketStructureDetector:
 
         # Create lower highs and lower lows pattern with actual swing points
         np.random.seed(42)  # For reproducibility
-        
-        # Create a downtrend with pullbacks to generate actual swing points  
+
+        # Create a downtrend with pullbacks to generate actual swing points
         base_trend = [150 - i * 2 for i in range(30)]  # Strong downtrend base
         volatility = [np.random.normal(0, 3) for _ in range(30)]  # Add volatility
-        
+
         closes = [base + vol for base, vol in zip(base_trend, volatility)]
         highs = [c + abs(np.random.normal(0, 1)) for c in closes]
         lows = [c - abs(np.random.normal(0, 1)) for c in closes]

@@ -35,7 +35,7 @@ class MarketStructureDetector:
         self,
         swing_lookback: int = 5,
         atr_swing_threshold_multiplier: float = 1.0,  # Multiplier for ATR to define swing significance
-        trend_strength_threshold: float = 0.66, # Min proportion of swings confirming trend (e.g. 0.66 for 2/3)
+        trend_strength_threshold: float = 0.66,  # Min proportion of swings confirming trend (e.g. 0.66 for 2/3)
     ):
         """
         Initialize the market structure detector.
@@ -99,39 +99,36 @@ class MarketStructureDetector:
         # Ensure we have enough data for lookback periods on both sides
         required_data_length = 2 * self.swing_lookback + 1
         if len(data) < required_data_length:
-            print(
-                f"Not enough data: {len(data)} bars, "
-                f"need at least {required_data_length}"
-            )
+            print(f"Not enough data: {len(data)} bars, " f"need at least {required_data_length}")
             return
 
         highs = data["High"].to_numpy()  # Convert to numpy array
-        lows = data["Low"].to_numpy()    # Convert to numpy array
-        close_prices = data["Close"].to_numpy() # Use .to_numpy() for clarity
-        
+        lows = data["Low"].to_numpy()  # Convert to numpy array
+        close_prices = data["Close"].to_numpy()  # Use .to_numpy() for clarity
+
         # Calculate ATR once for the whole dataset, using a common period like 14
         atr = self._calculate_atr(data, period=14)
-        if atr <= 0: # Handle cases where ATR might be zero or negative (e.g. flat price)
+        if atr <= 0:  # Handle cases where ATR might be zero or negative (e.g. flat price)
             # Fallback to a small percentage of the average price if ATR is not usable
-            average_price = 1.0 # Default average price
+            average_price = 1.0  # Default average price
             if len(close_prices) > 0:
                 average_price = np.mean(close_prices)
-            atr = average_price * 0.001 # Default to 0.1% of avg price as min threshold base
-            if atr <= 0: # Ensure atr is positive
-                atr = 0.0001 
+            atr = average_price * 0.001  # Default to 0.1% of avg price as min threshold base
+            if atr <= 0:  # Ensure atr is positive
+                atr = 0.0001
 
         # For swing highs - find local maxima
         for i in range(self.swing_lookback, len(data) - self.swing_lookback):
             # Check if highs[i] is the maximum in the window [i-lookback, i+lookback]
             window_highs = highs[i - self.swing_lookback : i + self.swing_lookback + 1]
-            if highs[i] >= np.max(window_highs): # Using >= to catch plateaus
+            if highs[i] >= np.max(window_highs):  # Using >= to catch plateaus
                 # Check if it's significantly different from the previous swing high using ATR
                 is_significant_swing = True
                 if self.swing_highs:
                     price_diff = abs(highs[i] - self.swing_highs[-1][1])
                     if price_diff < atr * self.atr_swing_threshold_multiplier:
                         is_significant_swing = False
-                
+
                 if is_significant_swing:
                     self.swing_highs.append((i, highs[i]))
 
@@ -139,7 +136,7 @@ class MarketStructureDetector:
         for i in range(self.swing_lookback, len(data) - self.swing_lookback):
             # Check if lows[i] is the minimum in the window [i-lookback, i+lookback]
             window_lows = lows[i - self.swing_lookback : i + self.swing_lookback + 1]
-            if lows[i] <= np.min(window_lows): # Using <= to catch plateaus
+            if lows[i] <= np.min(window_lows):  # Using <= to catch plateaus
                 # Check if it's significantly different from the previous swing low using ATR
                 is_significant_swing = True
                 if self.swing_lows:
@@ -165,24 +162,17 @@ class MarketStructureDetector:
         """
         # If we don't have enough distinct swings for comparison, trend is unknown
         if len(self.swing_highs) < 2 or len(self.swing_lows) < 2:
-            print(
-                f"Not enough swings for trend analysis: {len(self.swing_highs)} highs, "
-                f"{len(self.swing_lows)} lows"
-            )
+            print(f"Not enough swings for trend analysis: {len(self.swing_highs)} highs, " f"{len(self.swing_lows)} lows")
             return TrendType.UNKNOWN
 
         # Consider the last N swings for trend determination (e.g., last 3-4 pairs)
-        num_recent_swings_to_consider = 3 # Check last 3 highs and 3 lows
+        num_recent_swings_to_consider = 3  # Check last 3 highs and 3 lows
         recent_highs = self.swing_highs[-num_recent_swings_to_consider:]
         recent_lows = self.swing_lows[-num_recent_swings_to_consider:]
-        
-        if len(recent_highs) < 2 or len(recent_lows) < 2: # Still need at least 2 of each for comparisons
-             print(
-                f"Not enough RECENT swings for trend analysis: {len(recent_highs)} highs, "
-                f"{len(recent_lows)} lows"
-            )
-             return TrendType.UNKNOWN
 
+        if len(recent_highs) < 2 or len(recent_lows) < 2:  # Still need at least 2 of each for comparisons
+            print(f"Not enough RECENT swings for trend analysis: {len(recent_highs)} highs, " f"{len(recent_lows)} lows")
+            return TrendType.UNKNOWN
 
         # --- Higher Highs and Higher Lows (Uptrend) ---
         higher_highs_count = 0
@@ -205,28 +195,26 @@ class MarketStructureDetector:
             for i in range(1, len(recent_highs)):
                 if recent_highs[i][1] < recent_highs[i - 1][1]:
                     lower_highs_count += 1
-        
+
         lower_lows_count = 0
         if comparisons_low > 0:
             for i in range(1, len(recent_lows)):
                 if recent_lows[i][1] < recent_lows[i - 1][1]:
                     lower_lows_count += 1
-        
+
         # --- Determine Trend based on Strength Threshold ---
         # Min number of comparisons that must meet the threshold
         # For threshold of 0.66 (2/3): if 1 comparison, needs 1. if 2, needs 2. if 3, needs 2.
-        
+
         # Uptrend conditions
-        making_higher_highs = (higher_highs_count / comparisons_high >= self.trend_strength_threshold) \
-            if comparisons_high > 0 else False # Or True if only one high? No, need comparison.
-        making_higher_lows = (higher_lows_count / comparisons_low >= self.trend_strength_threshold) \
-            if comparisons_low > 0 else False
+        making_higher_highs = (
+            (higher_highs_count / comparisons_high >= self.trend_strength_threshold) if comparisons_high > 0 else False
+        )  # Or True if only one high? No, need comparison.
+        making_higher_lows = (higher_lows_count / comparisons_low >= self.trend_strength_threshold) if comparisons_low > 0 else False
 
         # Downtrend conditions
-        making_lower_highs = (lower_highs_count / comparisons_high >= self.trend_strength_threshold) \
-            if comparisons_high > 0 else False
-        making_lower_lows = (lower_lows_count / comparisons_low >= self.trend_strength_threshold) \
-            if comparisons_low > 0 else False
+        making_lower_highs = (lower_highs_count / comparisons_high >= self.trend_strength_threshold) if comparisons_high > 0 else False
+        making_lower_lows = (lower_lows_count / comparisons_low >= self.trend_strength_threshold) if comparisons_low > 0 else False
 
         # Print debug info
         print(
@@ -237,21 +225,21 @@ class MarketStructureDetector:
             f"Thresholds: HigherHighs: {making_higher_highs}, HigherLows: {making_higher_lows}, "
             f"LowerHighs: {making_lower_highs}, LowerLows: {making_lower_lows}"
         )
-        
+
         is_uptrend = making_higher_highs and making_higher_lows
         is_downtrend = making_lower_highs and making_lower_lows
 
-        if is_uptrend and not is_downtrend: # Clear uptrend
+        if is_uptrend and not is_downtrend:  # Clear uptrend
             return TrendType.UPTREND
-        elif is_downtrend and not is_uptrend: # Clear downtrend
+        elif is_downtrend and not is_uptrend:  # Clear downtrend
             return TrendType.DOWNTREND
-        elif is_uptrend and is_downtrend: # Conflicting signals (e.g. HH but LL)
+        elif is_uptrend and is_downtrend:  # Conflicting signals (e.g. HH but LL)
             # This can happen if, e.g., strength threshold is low.
             # Could mean a volatile range or a transition.
             # More conservative: if any conflict, it's not a clear trend.
             print("Conflicting trend signals based on threshold, classifying as RANGE")
             return TrendType.RANGE
-        else: # Neither clear uptrend nor clear downtrend
+        else:  # Neither clear uptrend nor clear downtrend
             return TrendType.RANGE
 
     def get_supply_demand_zones(self, data: pd.DataFrame) -> Dict[str, List[Dict[str, float]]]:
@@ -360,23 +348,23 @@ class MarketStructureDetector:
         if len(tr) == 0:
             average_price = 1.0
             if len(close) > 0:
-                average_price = float(np.mean(close)) # Cast to float
-            calculated_atr = average_price * 0.001 
+                average_price = float(np.mean(close))  # Cast to float
+            calculated_atr = average_price * 0.001
             return calculated_atr if calculated_atr > 0 else 0.0001
 
         # Calculate ATR as the simple moving average of true range for the defined period
-        relevant_tr = tr[-period:] 
-        
-        if len(relevant_tr) == 0 :
+        relevant_tr = tr[-period:]
+
+        if len(relevant_tr) == 0:
             average_price = 1.0
             if len(close) > 0:
-                average_price = float(np.mean(close)) # Cast to float
+                average_price = float(np.mean(close))  # Cast to float
             calculated_atr = average_price * 0.001
             return calculated_atr if calculated_atr > 0 else 0.0001
-            
-        atr_value = float(np.mean(relevant_tr)) # Cast to float
 
-        return atr_value if atr_value > 0 else 0.0001 # Ensure ATR is positive
+        atr_value = float(np.mean(relevant_tr))  # Cast to float
+
+        return atr_value if atr_value > 0 else 0.0001  # Ensure ATR is positive
 
 
 def detect_market_structure(
@@ -410,7 +398,7 @@ def get_supply_demand_zones(
     data: pd.DataFrame,
     swing_lookback: int = 5,
     atr_swing_threshold_multiplier: float = 1.0,
-    trend_strength_threshold: float = 0.66, # Added for consistency if detector is reused
+    trend_strength_threshold: float = 0.66,  # Added for consistency if detector is reused
 ) -> Dict[str, List[Dict[str, float]]]:
     """
     Identify supply and demand zones based on market structure.
