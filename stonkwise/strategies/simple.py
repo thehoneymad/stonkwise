@@ -9,7 +9,8 @@ import backtrader as bt
 
 class SimpleStrategy(bt.Strategy):
     """
-    A simple trading strategy that demonstrates the basic structure of a backtrader strategy.
+    A simple trading strategy that demonstrates the basic structure of a backtrader
+    strategy.
 
     This strategy is meant as a learning example and doesn't implement any specific
     trading logic yet. It simply prints the closing price of the asset each day.
