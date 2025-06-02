@@ -13,13 +13,23 @@
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "python.analysis.typeCheckingMode": "basic",
-    "python.linting.enabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.linting.flake8Args": [
+    
+    "flake8.enabled": true,
+    "flake8.args": [
         "--max-line-length=88",
         "--extend-ignore=E203",
         "--exclude=.git,__pycache__,build,dist"
     ],
+    "flake8.importStrategy": "useBundled",
+    "flake8.cwd": "${workspaceFolder}",
+    "flake8.showNotifications": "onError",
+    "flake8.severity": {
+        "E": "Error",
+        "F": "Error",
+        "I": "Information",
+        "W": "Warning"
+    },
+    
     "black-formatter.args": [
         "--line-length=88"
     ],
