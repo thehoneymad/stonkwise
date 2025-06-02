@@ -10,6 +10,9 @@ authors = ["Your Name <your.email@example.com>"]
 readme = "README.md"
 repository = "https://github.com/yourusername/stonkwise"
 license = "MIT"
+packages = [
+    {include = "stonkwise"}
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Financial and Insurance Industry",
