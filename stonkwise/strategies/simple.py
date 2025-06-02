@@ -25,7 +25,7 @@ class SimpleStrategy(bt.Strategy):
         ("fast_period", 50),  # Fast moving average period (50-day)
         ("mid_period", 100),  # Middle moving average period (100-day)
         ("slow_period", 200),  # Slow moving average period (200-day)
-    )
+    )  # type: ignore
 
     def __init__(self) -> None:
         """Initialize the strategy with moving averages."""

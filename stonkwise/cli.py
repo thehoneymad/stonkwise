@@ -12,7 +12,7 @@ import click
 
 
 # Define common options as function decorators to avoid repetition
-def ticker_option(required=True):
+def ticker_option(required: bool = True) -> callable:
     return click.option(
         "--ticker",
         "-t",
@@ -22,7 +22,7 @@ def ticker_option(required=True):
     )
 
 
-def period_option():
+def period_option() -> callable:
     return click.option(
         "--period",
         "-p",
@@ -32,8 +32,8 @@ def period_option():
     )
 
 
-def date_options():
-    def decorator(f):
+def date_options() -> callable:
+    def decorator(f: callable) -> callable:
         f = click.option(
             "--start-date",
             help="Start date for analysis (YYYY-MM-DD), defaults to 1 year ago",
