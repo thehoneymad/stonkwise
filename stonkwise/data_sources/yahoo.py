@@ -28,7 +28,8 @@ def get_yahoo_data(
 
     Notes:
         The Yahoo Finance data feed in backtrader connects to Yahoo Finance's API
-        to download historical price data. It provides OHLCV (Open, High, Low, Close, Volume)
+        to download historical price data.
+        It provides OHLCV (Open, High, Low, Close, Volume)
         data for stocks, ETFs, and other financial instruments. The data quality and
         availability depend on Yahoo Finance's service, which is free but may have
         limitations on request frequency and historical depth.
@@ -49,11 +50,13 @@ def get_yahoo_data(
         "4h": bt.TimeFrame.Minutes,  # Will need special handling
     }
 
-    # The compression parameter defines how many base time units to combine into one data point
+    # The compression parameter defines how many base time units to combine into
+    # one data point
     # For example:
     # - compression=1 with timeframe=Days means each data point represents 1 day
     # - compression=7 with timeframe=Days would create weekly bars from daily data
-    # - compression=240 with timeframe=Minutes creates 4-hour bars (240 minutes = 4 hours)
+    # - compression=240 with timeframe=Minutes creates 4-hour bars
+    # (240 minutes = 4 hours)
     # This allows for flexible time aggregation without needing separate data sources
     compression = 1
     timeframe = timeframe_map.get(period, bt.TimeFrame.Days)

@@ -2,7 +2,7 @@
 Tests for the CLI module.
 """
 
-import pytest
+
 from stonkwise.stonkwise.cli import parse_args
 
 

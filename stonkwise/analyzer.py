@@ -6,7 +6,6 @@ import datetime
 from typing import List, Optional
 
 import backtrader as bt
-import matplotlib.pyplot as plt
 
 from stonkwise.data_sources import get_yahoo_data
 from stonkwise.strategies import SimpleStrategy
@@ -21,7 +20,7 @@ def analyze_ticker(
 ) -> None:
     """
     Analyze a stock ticker using the specified strategy and period.
-    
+
     Args:
         ticker: Stock ticker symbol (e.g., 'MSFT')
         period: Time period ('day', 'week', or '4h')
@@ -36,35 +35,35 @@ def analyze_ticker(
         )
     if end_date is None:
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    
+
     # Create a cerebro entity
     cerebro = bt.Cerebro()
-    
+
     # Add the strategy
     if strategy == "simple":
         cerebro.addstrategy(SimpleStrategy)
     else:
         # Default to SimpleStrategy for now
         cerebro.addstrategy(SimpleStrategy)
-    
+
     # Get and add the data
     data = get_yahoo_data(ticker, start_date, end_date, period)
     cerebro.adddata(data)
-    
+
     # Set our desired cash start
     cerebro.broker.setcash(10000.0)
-    
+
     # Print out the starting conditions
     print(f"Starting Portfolio Value: ${cerebro.broker.getvalue():.2f}")
-    
+
     # Run the backtest
     cerebro.run()
-    
+
     # Print out the final result
     print(f"Final Portfolio Value: ${cerebro.broker.getvalue():.2f}")
-    
+
     # Plot the result
-    cerebro.plot(style='candlestick')
+    cerebro.plot(style="candlestick")
 
 
 def analyze_tickers(
@@ -76,7 +75,7 @@ def analyze_tickers(
 ) -> None:
     """
     Analyze multiple stock tickers.
-    
+
     Args:
         tickers: List of stock ticker symbols
         period: Time period ('day', 'week', or '4h')
