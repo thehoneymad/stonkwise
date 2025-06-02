@@ -47,12 +47,12 @@ example = "poetry_scripts:run_example"
 release = "poetry_scripts:run_release"
 
 [tool.black]
-line-length = 150
+line-length = 88
 target-version = ["py38", "py39", "py310"]
 
 [tool.isort]
 profile = "black"
-line_length = 150
+line_length = 88
 remove_redundant_aliases = true
 
 [tool.mypy]

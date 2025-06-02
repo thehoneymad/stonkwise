@@ -2,6 +2,8 @@
 A simple trading strategy for learning purposes.
 """
 
+from typing import Optional
+
 import backtrader as bt
 
 
@@ -13,17 +15,17 @@ class SimpleStrategy(bt.Strategy):
     trading logic yet. It simply prints the closing price of the asset each day.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the strategy."""
         # Keep a reference to the "close" line in the data[0] dataseries
         self.dataclose = self.datas[0].close
 
-    def log(self, txt, dt=None):
+    def log(self, txt: str, dt: Optional[bt.datetime.date] = None) -> None:
         """Logging function for the strategy."""
         dt = dt or self.datas[0].datetime.date(0)
         print(f"{dt.isoformat()} {txt}")
 
-    def next(self):
+    def next(self) -> None:
         """
         Define what will be done in each iteration when new data arrives.
 

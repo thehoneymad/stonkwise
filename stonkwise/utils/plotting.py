@@ -2,11 +2,12 @@
 Utility functions for plotting and visualization.
 """
 
+from typing import Any
+
 import matplotlib.pyplot as plt
-import backtrader as bt
 
 
-def customize_plot(fig):
+def customize_plot(fig: Any) -> None:
     """
     Customize a backtrader plot figure.
 
@@ -34,7 +35,7 @@ def customize_plot(fig):
         label.set_ha("right")
 
 
-def save_plot(fig, filename="analysis.png"):
+def save_plot(fig: Any, filename: str = "analysis.png") -> None:
     """
     Save a plot to a file.
 
