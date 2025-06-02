@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from stonkwise.data_sources import get_yahoo_data
-from stonkwise.strategies import SimpleStrategy
+from stonkwise.strategies import PriceActionStrategy, SimpleStrategy
 
 
 def backtest_tickers(
@@ -117,7 +117,7 @@ def backtest_ticker(
         cerebro.addstrategy(SimpleStrategy)
     elif strategy == "price_action":
         # This will be implemented as part of Issue #4
-        cerebro.addstrategy(SimpleStrategy)
+        cerebro.addstrategy(PriceActionStrategy)
     else:
         # Default to SimpleStrategy
         cerebro.addstrategy(SimpleStrategy)
@@ -167,7 +167,7 @@ def backtest_ticker(
         elif strategy == "ma_cross":
             cerebro.addstrategy(SimpleStrategy)
         elif strategy == "price_action":
-            cerebro.addstrategy(SimpleStrategy)
+            cerebro.addstrategy(PriceActionStrategy)
         else:
             cerebro.addstrategy(SimpleStrategy)
 

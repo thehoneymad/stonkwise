@@ -1,8 +1,10 @@
 """
-Trading strategies for backtesting with backtrader.
+Strategies module for stonkwise.
+
+This module contains various trading strategies for the stonkwise platform.
 """
 
-# Import strategies so they can be accessed directly from the strategies package
-from .simple import SimpleStrategy
+from stonkwise.strategies.price_action import PriceActionStrategy
+from stonkwise.strategies.simple import SimpleStrategy
 
-__all__ = ["SimpleStrategy"]
+__all__ = ['SimpleStrategy', 'PriceActionStrategy']
