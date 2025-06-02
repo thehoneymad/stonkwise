@@ -16,9 +16,9 @@ def get_yahoo_data(
     start_date: Union[str, datetime.datetime],
     end_date: Optional[Union[str, datetime.datetime]] = None,
     period: str = "day",
-) -> bt.feeds.YahooFinanceData:
+) -> bt.feeds.GenericCSVData:
     """
-    Get stock data from Yahoo Finance.
+    Get stock data from Yahoo Finance using yfinance package.
 
     Args:
         ticker: Stock ticker symbol (e.g., 'MSFT')
@@ -44,75 +44,57 @@ def get_yahoo_data(
     elif isinstance(end_date, str):
         end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
 
-    # Try using bt.feeds.YahooFinanceData first
-    try:
-        # Map period to Yahoo Finance timeframe
-        timeframe_map = {
-            "day": bt.TimeFrame.Days,
-            "week": bt.TimeFrame.Weeks,
-            "4h": bt.TimeFrame.Minutes,  # Will need special handling
-        }
+    # Use yfinance to download data
+    yf_period_map = {
+        "day": "1d",
+        "week": "1wk",
+        "4h": "1h",  # We'll need to resample this
+    }
+    
+    # Download data using yfinance
+    print(f"Downloading {ticker} data from Yahoo Finance...")
+    data_df = yf.download(
+        ticker,
+        start=start_date,
+        end=end_date,
+        interval=yf_period_map.get(period, "1d"),
+        auto_adjust=True
+    )
+    
+    # Handle 4h period by resampling if needed
+    if period == "4h" and len(data_df) > 0:
+        print("Resampling hourly data to 4-hour intervals...")
+        data_df = data_df.resample('4H').agg({
+            'Open': 'first',
+            'High': 'max',
+            'Low': 'min',
+            'Close': 'last',
+            'Volume': 'sum'
+        }).dropna()
+    
+    # Ensure tmp directory exists
+    project_root = pathlib.Path(__file__).parent.parent.parent
+    tmp_dir = project_root / "tmp"
+    os.makedirs(tmp_dir, exist_ok=True)
+    
+    # Save to a temporary CSV file in the project's tmp directory
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    temp_file = tmp_dir / f"{ticker}_{period}_{timestamp}.csv"
+    data_df.to_csv(temp_file)
+    
+    print(f"Data saved to temporary file: {temp_file}")
+    
+    # Create a backtrader data feed from the CSV file
+    data = bt.feeds.GenericCSVData(
+        dataname=str(temp_file),
+        dtformat="%Y-%m-%d",
+        datetime=0,
+        open=1,
+        high=2,
+        low=3,
+        close=4,
+        volume=5,
+        openinterest=-1
+    )
 
-        compression = 1
-        timeframe = timeframe_map.get(period, bt.TimeFrame.Days)
-
-        # Special case for 4h period
-        if period == "4h":
-            timeframe = bt.TimeFrame.Minutes
-            compression = 240  # 4 hours = 240 minutes
-
-        # Create and return the data feed
-        data = bt.feeds.YahooFinanceData(
-            dataname=ticker,
-            fromdate=start_date,
-            todate=end_date,
-            timeframe=timeframe,
-            compression=compression,
-        )
-        
-        return data
-        
-    except Exception as e:
-        print(f"Warning: Built-in YahooFinanceData failed: {e}")
-        print("Falling back to yfinance package...")
-        
-        # Use yfinance to download data
-        yf_period_map = {
-            "day": "1d",
-            "week": "1wk",
-            "4h": "1h",  # We'll need to resample this
-        }
-        
-        # Download data using yfinance
-        data_df = yf.download(
-            ticker,
-            start=start_date,
-            end=end_date,
-            interval=yf_period_map.get(period, "1d"),
-            auto_adjust=True
-        )
-        
-        # Ensure tmp directory exists
-        project_root = pathlib.Path(__file__).parent.parent.parent
-        tmp_dir = project_root / "tmp"
-        os.makedirs(tmp_dir, exist_ok=True)
-        
-        # Save to a temporary CSV file in the project's tmp directory
-        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        temp_file = tmp_dir / f"{ticker}_{period}_{timestamp}.csv"
-        data_df.to_csv(temp_file)
-        
-        # Create a backtrader data feed from the CSV file
-        data = bt.feeds.GenericCSVData(
-            dataname=str(temp_file),
-            dtformat="%Y-%m-%d",
-            datetime=0,
-            open=1,
-            high=2,
-            low=3,
-            close=4,
-            volume=5,
-            openinterest=-1
-        )
-
-        return data
+    return data
