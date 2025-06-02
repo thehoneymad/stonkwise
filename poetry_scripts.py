@@ -120,9 +120,9 @@ def run_example(args: Optional[List[str]] = None) -> None:
     subprocess.run(cmd, check=False)
 
 
-def run_verify(args: Optional[List[str]] = None) -> None:
-    """Run format and lint before build."""
-    print("🔍 Running pre-build verification...")
+def run_release(args: Optional[List[str]] = None) -> None:
+    """Run format and lint before build to prepare for release."""
+    print("🚀 Preparing for release...")
     
     # First format the code
     print("\n📝 Formatting code...")
@@ -136,4 +136,4 @@ def run_verify(args: Optional[List[str]] = None) -> None:
     print("\n📦 Building package...")
     subprocess.run(["poetry", "build"], check=False)
     
-    print("\n✅ Verification and build complete!")
+    print("\n✅ Release preparation complete!")

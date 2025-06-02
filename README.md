@@ -50,8 +50,8 @@ poetry run clean
 # Run an example analysis
 poetry run example --ticker=MSFT --period=day
 
-# Verify and build (format + lint + build)
-poetry run verify
+# Prepare for release (format + lint + build)
+poetry run release
 ```
 
 ## Project Structure

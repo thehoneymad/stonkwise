@@ -44,7 +44,7 @@ lint = "poetry_scripts:run_lint"
 test = "poetry_scripts:run_test"
 clean = "poetry_scripts:run_clean"
 example = "poetry_scripts:run_example"
-verify = "poetry_scripts:run_verify"
+release = "poetry_scripts:run_release"
 
 [tool.black]
 line-length = 150
