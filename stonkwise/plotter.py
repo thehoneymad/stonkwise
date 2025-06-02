@@ -85,9 +85,7 @@ def plot_ticker(
     """
     # Set default dates if not provided
     if start_date is None:
-        start_date = (datetime.datetime.now() - datetime.timedelta(days=365)).strftime(
-            "%Y-%m-%d"
-        )
+        start_date = (datetime.datetime.now() - datetime.timedelta(days=365)).strftime("%Y-%m-%d")
     if end_date is None:
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
@@ -173,9 +171,7 @@ def plot_ticker(
             detector.detect_structure(df)
         zones = detector.get_supply_demand_zones(df)
 
-        print(
-            f"Detected {len(zones['supply'])} supply zones and {len(zones['demand'])} demand zones"
-        )
+        print(f"Detected {len(zones['supply'])} supply zones and {len(zones['demand'])} demand zones")
 
     # Run the backtest (required for plotting)
     cerebro.run()
@@ -231,7 +227,9 @@ def create_plot(
         volup="green",
         voldown="red",
         show=False,
-    )[0][0]
+    )[
+        0
+    ][0]
 
     # TODO: Add visualization of zones if provided
     if zones:
