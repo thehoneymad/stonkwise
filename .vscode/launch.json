@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Analyze MSFT",
+            "type": "python",
+            "request": "launch",
+            "module": "stonkwise",
+            "args": [
+                "analyze",
+                "--ticker",
+                "MSFT",
+                "--period",
+                "day",
+                "--strategy",
+                "simple"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
