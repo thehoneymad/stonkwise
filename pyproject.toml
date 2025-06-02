@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 name = "stonkwise"
 version = "0.1.0"
 description = "A Python library for backtesting trading strategies using backtrader"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Swagata Prateek <thehoneymadl@hotmail.com>"]
 readme = "README.md"
 repository = "https://github.com/yourusername/stonkwise"
 license = "MIT"
@@ -16,19 +16,21 @@ classifiers = [
     "Intended Audience :: Financial and Insurance Industry",
     "Topic :: Office/Business :: Financial :: Investment",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8.1"
+python = "^3.12"
 backtrader = "^1.9.76"
 pandas = "^1.5.3"
 numpy = "^1.24.0"
 matplotlib = "^3.7.0"
 requests = "^2.32.3"
 yfinance = "^0.2.61"
+click = "^8.2.1"
+pandas-stubs = "^2.2.3.250527"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
@@ -58,7 +60,7 @@ line_length = 88
 remove_redundant_aliases = true
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -66,4 +68,12 @@ disallow_incomplete_defs = true
 
 [[tool.mypy.overrides]]
 module = "backtrader.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "yfinance.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pandas.*"
 ignore_missing_imports = true
