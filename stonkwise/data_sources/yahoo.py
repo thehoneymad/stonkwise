@@ -6,6 +6,7 @@ import datetime
 from typing import Optional, Union
 
 import backtrader as bt
+import yfinance as yf
 
 
 def get_yahoo_data(
@@ -43,36 +44,37 @@ def get_yahoo_data(
     elif isinstance(end_date, str):
         end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
 
-    # Map period to Yahoo Finance timeframe
-    timeframe_map = {
-        "day": bt.TimeFrame.Days,
-        "week": bt.TimeFrame.Weeks,
-        "4h": bt.TimeFrame.Minutes,  # Will need special handling
+    # Use yfinance to download data
+    yf_period_map = {
+        "day": "1d",
+        "week": "1wk",
+        "4h": "1h",  # We'll need to resample this
     }
-
-    # The compression parameter defines how many base time units to combine into
-    # one data point
-    # For example:
-    # - compression=1 with timeframe=Days means each data point represents 1 day
-    # - compression=7 with timeframe=Days would create weekly bars from daily data
-    # - compression=240 with timeframe=Minutes creates 4-hour bars
-    # (240 minutes = 4 hours)
-    # This allows for flexible time aggregation without needing separate data sources
-    compression = 1
-    timeframe = timeframe_map.get(period, bt.TimeFrame.Days)
-
-    # Special case for 4h period
-    if period == "4h":
-        timeframe = bt.TimeFrame.Minutes
-        compression = 240  # 4 hours = 240 minutes
-
-    # Create and return the data feed
-    data = bt.feeds.YahooFinanceData(
-        dataname=ticker,
-        fromdate=start_date,
-        todate=end_date,
-        timeframe=timeframe,
-        compression=compression,
+    
+    # Download data using yfinance
+    data_df = yf.download(
+        ticker,
+        start=start_date,
+        end=end_date,
+        interval=yf_period_map.get(period, "1d"),
+        auto_adjust=True
+    )
+    
+    # Save to a temporary CSV file
+    temp_file = f"/tmp/{ticker}_{period}_{datetime.datetime.now().timestamp()}.csv"
+    data_df.to_csv(temp_file)
+    
+    # Create a backtrader data feed from the CSV file
+    data = bt.feeds.GenericCSVData(
+        dataname=temp_file,
+        dtformat="%Y-%m-%d",
+        datetime=0,
+        open=1,
+        high=2,
+        low=3,
+        close=4,
+        volume=5,
+        openinterest=-1
     )
 
     return data
