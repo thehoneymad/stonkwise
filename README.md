@@ -35,10 +35,10 @@ poetry run stonkwise analyze --ticker AAPL --period 4h
 This project uses Poetry for dependency management and task running:
 
 ```bash
-# Format code
+# Format code (removes unused imports, formats with black, sorts imports)
 poetry run format
 
-# Lint code
+# Lint code (flake8 and mypy)
 poetry run lint
 
 # Run tests
@@ -49,6 +49,9 @@ poetry run clean
 
 # Run an example analysis
 poetry run example --ticker=MSFT --period=day
+
+# Verify and build (format + lint + build)
+poetry run verify
 ```
 
 ## Project Structure
