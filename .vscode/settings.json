@@ -35,5 +35,18 @@
     ],
     "black-formatter.importStrategy": "useBundled",
     "black-formatter.showNotifications": "onError",
-    "black-formatter.cwd": "${workspaceFolder}"
+    "black-formatter.cwd": "${workspaceFolder}",
+    
+    "mypy-type-checker.enabled": true,
+    "mypy-type-checker.args": [
+        "--config-file=${workspaceFolder}/setup.cfg"
+    ],
+    "mypy-type-checker.importStrategy": "useBundled",
+    "mypy-type-checker.cwd": "${workspaceFolder}",
+    "mypy-type-checker.reportingScope": "workspace",
+    "mypy-type-checker.showNotifications": "onError",
+    "mypy-type-checker.severity": {
+        "error": "Error",
+        "note": "Information"
+    }
 }
