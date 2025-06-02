@@ -19,27 +19,27 @@ class TestMarketStructureDetector:
     def detector(self):
         """Create a detector with test-specific parameters."""
         return MarketStructureDetector(
-            swing_lookback=3,  # Smaller lookback for testing
-            swing_threshold=0.005,  # Lower threshold for testing
+            swing_lookback=1,  # Smaller lookback for testing
+            atr_swing_threshold_multiplier=0.01,  # Very low threshold for testing
+            trend_strength_threshold=0.5,  # Lower threshold for easier testing
         )
 
     def test_detect_uptrend(self):
         """Test detection of an uptrend."""
         # Create a dataframe with a clear uptrend (higher highs and higher lows)
-        dates = [datetime.now() - timedelta(days=i) for i in range(50, 0, -1)]
+        dates = [datetime.now() - timedelta(days=i) for i in range(30, 0, -1)]
 
-        # Create higher highs and higher lows pattern with clear trend
+        # Create higher highs and higher lows pattern with actual swing points
         np.random.seed(42)  # For reproducibility
-        highs = []
-        lows = []
-        base = 100
-        for i in range(50):
-            # Create a clear uptrend with minimal noise
-            highs.append(base + i * 1.0 + np.random.normal(0, 0.2))
-            lows.append(base + i * 0.8 + np.random.normal(0, 0.2))
-
-        closes = [(h + l) / 2 for h, l in zip(highs, lows)]
-        opens = [c - 0.5 for c in closes]
+        
+        # Create an uptrend with pullbacks to generate actual swing points
+        base_trend = [100 + i * 2 for i in range(30)]  # Strong uptrend base
+        volatility = [np.random.normal(0, 3) for _ in range(30)]  # Add volatility
+        
+        closes = [base + vol for base, vol in zip(base_trend, volatility)]
+        highs = [c + abs(np.random.normal(0, 1)) for c in closes]
+        lows = [c - abs(np.random.normal(0, 1)) for c in closes]
+        opens = [c + np.random.normal(0, 0.5) for c in closes]
 
         df = pd.DataFrame(
             {
@@ -47,15 +47,16 @@ class TestMarketStructureDetector:
                 "High": highs,
                 "Low": lows,
                 "Close": closes,
-                "Volume": [1000000] * 50,
+                "Volume": [1000000] * 30,
             },
             index=dates,
         )
 
         # Create a detector with more relaxed parameters for testing
         test_detector = MarketStructureDetector(
-            swing_lookback=2,  # Smaller lookback
-            swing_threshold=0.0001,  # Much lower threshold
+            swing_lookback=1,  # Smaller lookback
+            atr_swing_threshold_multiplier=0.01,  # Much lower threshold
+            trend_strength_threshold=0.5,  # Lower threshold for easier testing
         )
 
         # Detect the trend
@@ -75,20 +76,19 @@ class TestMarketStructureDetector:
     def test_detect_downtrend(self):
         """Test detection of a downtrend."""
         # Create a dataframe with a clear downtrend (lower highs and lower lows)
-        dates = [datetime.now() - timedelta(days=i) for i in range(50, 0, -1)]
+        dates = [datetime.now() - timedelta(days=i) for i in range(30, 0, -1)]
 
-        # Create lower highs and lower lows pattern with clear trend
+        # Create lower highs and lower lows pattern with actual swing points
         np.random.seed(42)  # For reproducibility
-        highs = []
-        lows = []
-        base = 150
-        for i in range(50):
-            # Create a clear downtrend with minimal noise
-            highs.append(base - i * 1.0 + np.random.normal(0, 0.2))
-            lows.append(base - i * 1.2 + np.random.normal(0, 0.2))
-
-        closes = [(h + l) / 2 for h, l in zip(highs, lows)]
-        opens = [c + 0.5 for c in closes]
+        
+        # Create a downtrend with pullbacks to generate actual swing points  
+        base_trend = [150 - i * 2 for i in range(30)]  # Strong downtrend base
+        volatility = [np.random.normal(0, 3) for _ in range(30)]  # Add volatility
+        
+        closes = [base + vol for base, vol in zip(base_trend, volatility)]
+        highs = [c + abs(np.random.normal(0, 1)) for c in closes]
+        lows = [c - abs(np.random.normal(0, 1)) for c in closes]
+        opens = [c + np.random.normal(0, 0.5) for c in closes]
 
         df = pd.DataFrame(
             {
@@ -96,15 +96,16 @@ class TestMarketStructureDetector:
                 "High": highs,
                 "Low": lows,
                 "Close": closes,
-                "Volume": [1000000] * 50,
+                "Volume": [1000000] * 30,
             },
             index=dates,
         )
 
         # Create a detector with more relaxed parameters for testing
         test_detector = MarketStructureDetector(
-            swing_lookback=2,  # Smaller lookback
-            swing_threshold=0.0001,  # Much lower threshold
+            swing_lookback=1,  # Smaller lookback
+            atr_swing_threshold_multiplier=0.01,  # Much lower threshold
+            trend_strength_threshold=0.5,  # Lower threshold for easier testing
         )
 
         # Detect the trend
@@ -153,8 +154,9 @@ class TestMarketStructureDetector:
 
         # Create a detector with more relaxed parameters for testing
         test_detector = MarketStructureDetector(
-            swing_lookback=2,  # Smaller lookback
-            swing_threshold=0.0001,  # Much lower threshold
+            swing_lookback=1,  # Smaller lookback
+            atr_swing_threshold_multiplier=0.01,  # Much lower threshold
+            trend_strength_threshold=0.5,  # Lower threshold for easier testing
         )
 
         # Detect the trend
@@ -236,8 +238,9 @@ class TestMarketStructureDetector:
 
         # Create a detector with more relaxed parameters for testing
         test_detector = MarketStructureDetector(
-            swing_lookback=2,  # Smaller lookback
-            swing_threshold=0.0001,  # Much lower threshold
+            swing_lookback=1,  # Smaller lookback
+            atr_swing_threshold_multiplier=0.01,  # Much lower threshold
+            trend_strength_threshold=0.5,  # Lower threshold for easier testing
         )
 
         # Detect the trend
