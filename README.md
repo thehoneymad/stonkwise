@@ -1,84 +1,98 @@
-# stonkwise
+# 📈 Stonkwise
 
-A simple command line tool for learning technical trading analysis and visualization.
+> *Because "stonks only go up" needed a Python library to prove it.*
 
-## Overview
+Stonkwise is a Python library for backtesting trading strategies using [Backtrader](https://www.backtrader.com/). It provides a simple CLI for analyzing historical price data and backtesting trading strategies.
 
-stonkwise is a learning tool for technical trading that:
-- Analyzes stock tickers (like MSFT, AMZN)
-- Supports different time periods (day, week, 4 hours)
-- Will include various trading strategies as you learn
-- Visualizes results to help understand market patterns
+## 🚀 Features
 
-## Installation
+- 📊 **Price Action Analysis**: Detect market structure, supply/demand zones, and reversal patterns
+- 📉 **Technical Indicators**: Moving averages, trend detection, and more
+- 🧪 **Backtesting**: Test your strategies on historical data
+- 📋 **Performance Metrics**: Get detailed statistics on your strategy's performance
+- 🔄 **Flexible Data Loading**: Use Yahoo Finance, CSV, or Parquet files
+- 💾 **Results Export**: Save your backtest results for further analysis
+
+## 🛠️ Installation
 
 ```bash
-# Install using Poetry
+# Clone the repository
+git clone https://github.com/yourusername/stonkwise.git
+cd stonkwise
+
+# Install with Poetry
 poetry install
+
+# Or with pip
+pip install -e .
 ```
 
-## Usage
+## 📖 Usage
+
+### 📊 Analyze Stock Data
 
 ```bash
-# Basic usage
-poetry run stonkwise analyze --ticker MSFT --period day
+# Basic analysis
+stonkwise analyze --ticker MSFT
 
-# Multiple tickers
-poetry run stonkwise analyze --ticker MSFT AMZN GOOGL --period week
+# Analysis with a specific date range
+stonkwise analyze --ticker AAPL --start-date 2023-01-01 --end-date 2023-12-31
 
-# Different time periods
-poetry run stonkwise analyze --ticker AAPL --period 4h
+# Analysis with moving averages
+stonkwise analyze --ticker TSLA --show-ma
+
+# Analysis with trend detection
+stonkwise analyze --ticker AMZN --show-trend
+
+# Analysis with supply/demand zones
+stonkwise analyze --ticker NVDA --show-zones
 ```
 
-## Development
-
-This project uses Poetry for dependency management and task running:
+### 🧪 Backtest Trading Strategies
 
 ```bash
-# Format code (removes unused imports, formats with black, sorts imports)
-poetry run format
+# Basic backtest
+stonkwise analyze --ticker MSFT --backtest
 
-# Lint code (flake8 and mypy)
-poetry run lint
+# Backtest with custom parameters
+stonkwise analyze --ticker AAPL --backtest --cash 100000 --commission 0.0005
 
-# Run tests
-poetry run test
+# Backtest with a specific strategy
+stonkwise analyze --ticker TSLA --backtest --strategy ma_cross
 
-# Clean build artifacts
-poetry run clean
-
-# Run an example analysis
-poetry run example --ticker=MSFT --period=day
-
-# Prepare for release (format + lint + build)
-poetry run release
+# Backtest with result export
+stonkwise analyze --ticker AMZN --backtest --output results.csv
 ```
 
-## Project Structure
+## 📝 Strategies
 
-```
-stonkwise/              # Project root
-├── stonkwise/          # Actual package code
-│   ├── __init__.py
-│   ├── __main__.py
-│   ├── analyzer.py
-│   ├── cli.py
-│   ├── data_sources/
-│   │   ├── __init__.py
-│   │   └── yahoo.py
-│   ├── strategies/
-│   │   ├── __init__.py
-│   │   └── simple.py
-│   └── utils/
-│       ├── __init__.py
-│       └── plotting.py
-├── tests/              # Test directory
-├── poetry_scripts.py   # Script functions for Poetry commands
-└── pyproject.toml      # Project configuration
-```
+### Simple Moving Average Crossover
 
-This is a learning project to explore:
-- Technical analysis concepts
-- Backtesting trading strategies
-- Data visualization for financial markets
-- Command line tool development in Python
+A classic strategy that uses the crossing of two moving averages to generate buy and sell signals:
+
+- Buy when the fast moving average crosses above the slow moving average (golden cross)
+- Sell when the fast moving average crosses below the slow moving average (death cross)
+
+### Price Action Strategy
+
+A more advanced strategy that uses market structure, supply/demand zones, and reversal patterns:
+
+- Identify market structure (uptrend, downtrend, or range)
+- Detect supply and demand zones
+- Enter trades when price revisits these zones and forms reversal patterns
+
+## 🤔 Why "Stonkwise"?
+
+Because in the world of meme stocks and Reddit traders, we needed a tool that's both powerful and doesn't take itself too seriously. Stonkwise helps you make wise decisions about your stonks. 
+
+Remember: Past performance is not indicative of future results, but it's all we've got to go on unless you have a time machine (in which case, we should talk).
+
+## 📄 License
+
+MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgements
+
+- [Backtrader](https://www.backtrader.com/) for the amazing backtesting framework
+- [yfinance](https://github.com/ranaroussi/yfinance) for easy access to Yahoo Finance data
+- All the diamond-handed HODLers who inspired this project

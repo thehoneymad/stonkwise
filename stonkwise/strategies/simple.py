@@ -2,7 +2,7 @@
 A simple moving average crossover trading strategy.
 """
 
-from typing import Dict, Optional
+from typing import Optional
 
 import backtrader as bt
 
